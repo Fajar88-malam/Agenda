@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-surat {
+    font-family: 'Tinos', 'Times New Roman', Times, Georgia, serif;
+  }
+  
+  .font-sans-ui {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Garis Ganda Kop Surat Resmi Tata Naskah Dinas */
+.kop-double-border {
+  border-bottom: 3.5px solid #000000;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.kop-double-border::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 1px;
+  background-color: #000000;
+}
+
+/* Stempel cap bulat dinas effect */
+.stempel-dinas {
+  border: 3px double #1e3a8a;
+  border-radius: 50%;
+  color: #1e3a8a;
+  text-transform: uppercase;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+/* Print Page Rules */
+@media print {
+  @page {
+    size: auto;
+    margin: 12mm 15mm 12mm 18mm;
+  }
+
+  html, body {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+
+  /* Hilangkan seluruh elemen UI aplikasi dan kotak/kolom Buat Surat Baru saat pencetakan */
+  .no-print,
+  [data-no-print="true"],
+  [class*="no-print"],
+  [class*="print:hidden"],
+  .kolom-buat-surat,
+  .kotak-buat-surat,
+  header,
+  nav,
+  aside,
+  footer,
+  button,
+  input,
+  select,
+  textarea,
+  .no-print-border {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  /* Sembunyikan main jika modal pratinjau surat aktif */
+  body:has(#printable-document) main:not(:has(#printable-document)) {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: transparent !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  /* Reset modal containers saat pencetakan agar dokumen surat mengisi halaman dengan rapi */
+  .fixed {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .printable-page, #printable-document {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    background: #ffffff !important;
+  }
+
+  /* Pemisah Halaman Resmi untuk Paket Surat Mutasi (Lembar 1 & Lembar 2) */
+  .page-break-after {
+    page-break-after: always !important;
+    break-after: page !important;
+    height: 0;
+    display: block;
+  }
+
+  /* Prevent page break inside table rows and signature block */
+  .signature-block, .tabel-surat tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}

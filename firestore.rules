@@ -1,0 +1,115 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reusable hardened helper primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isStaff() {
+      return true;
+    }
+
+    // Helper functions for entity validation
+    function isValidSchoolProfile(data) {
+      return data.namaSekolah is string && data.namaSekolah.size() > 0 && data.namaSekolah.size() <= 200
+        && data.npsn is string && data.npsn.size() <= 32
+        && data.kepalaSekolahNama is string && data.kepalaSekolahNama.size() <= 200;
+    }
+
+    function isValidStudent(data) {
+      return data.nama is string && data.nama.size() > 0 && data.nama.size() <= 200
+        && data.nisn is string && data.nisn.size() <= 64
+        && (data.jenisKelamin == 'L' || data.jenisKelamin == 'P')
+        && data.kelas is string && data.kelas.size() <= 64
+        && (data.status == 'Aktif' || data.status == 'Mutasi Keluar' || data.status == 'Lulus');
+    }
+
+    function isValidTeacher(data) {
+      return data.nama is string && data.nama.size() > 0 && data.nama.size() <= 200
+        && data.jabatan is string && data.jabatan.size() <= 120
+        && data.isActive is bool;
+    }
+
+    function isValidLetter(data) {
+      return data.nomorSurat is string && data.nomorSurat.size() > 0 && data.nomorSurat.size() <= 200
+        && data.nomorUrut is number && data.nomorUrut > 0
+        && data.perihal is string && data.perihal.size() > 0 && data.perihal.size() <= 500
+        && data.status is string && data.status.size() <= 64;
+    }
+
+    function isValidCounter(data) {
+      return data.lastLetterNumber is number && data.lastLetterNumber >= 0;
+    }
+
+    function isValidDraft(data) {
+      return data.letterType is string && data.letterType.size() <= 64;
+    }
+
+    // 1. School Profile Collection
+    match /school_profile/{profileId} {
+      allow get: if true; // Publicly readable for official letterhead verification
+      allow list: if true;
+      allow create, update: if isStaff() && isValidId(profileId) && isValidSchoolProfile(incoming());
+      allow delete: if false; // School profile cannot be deleted
+    }
+
+    // 2. Students Collection
+    match /students/{studentId} {
+      allow get, list: if isStaff();
+      allow create, update: if isStaff() && isValidId(studentId) && isValidStudent(incoming());
+      allow delete: if isStaff() && isValidId(studentId);
+    }
+
+    // 3. Teachers / GTK Collection
+    match /teachers/{teacherId} {
+      allow get, list: if isStaff();
+      allow create, update: if isStaff() && isValidId(teacherId) && isValidTeacher(incoming());
+      allow delete: if isStaff() && isValidId(teacherId);
+    }
+
+    // 4. Letters Archive Collection
+    match /letters/{letterId} {
+      allow get: if true; // Letters can be viewed for QR code verification
+      allow list: if isStaff();
+      allow create, update: if isStaff() && isValidId(letterId) && isValidLetter(incoming());
+      allow delete: if isStaff() && isValidId(letterId);
+    }
+
+    // 5. Letter Sequence Counter
+    match /counters/{counterId} {
+      allow get, list: if isStaff();
+      allow create, update: if isStaff() && isValidId(counterId) && isValidCounter(incoming());
+      allow delete: if false; // Counter must never be deleted
+    }
+
+    // 6. Realtime Drafts (Auto-saved while typing)
+    match /drafts/{draftId} {
+      allow get, list: if isStaff();
+      allow create, update: if isStaff() && isValidId(draftId) && isValidDraft(incoming());
+      allow delete: if isStaff() && isValidId(draftId);
+    }
+  }
+}

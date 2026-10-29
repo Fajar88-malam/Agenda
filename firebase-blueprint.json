@@ -1,0 +1,164 @@
+{
+  "entities": {
+    "SchoolProfile": {
+      "title": "SchoolProfile",
+      "description": "Profil identitas sekolah, kepala sekolah, kop surat dan konfigurasi administrasi",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "namaPemerintah": { "type": "string" },
+        "namaDinas": { "type": "string" },
+        "namaCabangDinas": { "type": "string" },
+        "namaSekolah": { "type": "string" },
+        "npsn": { "type": "string" },
+        "akreditasi": { "type": "string" },
+        "alamatJalan": { "type": "string" },
+        "kelurahan": { "type": "string" },
+        "kecamatan": { "type": "string" },
+        "kotaKab": { "type": "string" },
+        "provinsi": { "type": "string" },
+        "kodePos": { "type": "string" },
+        "telepon": { "type": "string" },
+        "email": { "type": "string" },
+        "website": { "type": "string" },
+        "logoLeftUrl": { "type": "string" },
+        "logoRightUrl": { "type": "string" },
+        "showDualLogo": { "type": "boolean" },
+        "kepalaSekolahNama": { "type": "string" },
+        "kepalaSekolahGelar": { "type": "string" },
+        "kepalaSekolahNip": { "type": "string" },
+        "kepalaSekolahPangkat": { "type": "string" },
+        "kepalaSekolahJabatan": { "type": "string" },
+        "stempelEnabled": { "type": "boolean" },
+        "ttdEnabled": { "type": "boolean" },
+        "namaSingkatanSekolah": { "type": "string" },
+        "kodeKlasifikasiPrefix": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "namaSekolah", "npsn", "kepalaSekolahNama"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "Data master siswa untuk pembuatan surat mutasi, panggilan, aktif sekolah",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nis": { "type": "string" },
+        "nisn": { "type": "string" },
+        "nama": { "type": "string" },
+        "jenisKelamin": { "type": "string", "enum": ["L", "P"] },
+        "tempatLahir": { "type": "string" },
+        "tanggalLahir": { "type": "string" },
+        "kelas": { "type": "string" },
+        "jurusan": { "type": "string" },
+        "namaAyah": { "type": "string" },
+        "namaIbu": { "type": "string" },
+        "namaWali": { "type": "string" },
+        "pekerjaanOrtu": { "type": "string" },
+        "alamat": { "type": "string" },
+        "noHpOrtu": { "type": "string" },
+        "status": { "type": "string", "enum": ["Aktif", "Mutasi Keluar", "Lulus"] },
+        "tahunMasuk": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "nisn", "nama", "jenisKelamin", "kelas", "status"]
+    },
+    "Teacher": {
+      "title": "Teacher",
+      "description": "Data guru dan tenaga kependidikan (GTK) untuk surat penugasan",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nip": { "type": "string" },
+        "nuptk": { "type": "string" },
+        "nama": { "type": "string" },
+        "jenisKelamin": { "type": "string", "enum": ["L", "P"] },
+        "pangkatGolongan": { "type": "string" },
+        "jabatan": { "type": "string" },
+        "mataPelajaran": { "type": "string" },
+        "noHp": { "type": "string" },
+        "email": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "nama", "jabatan", "isActive"]
+    },
+    "Letter": {
+      "title": "Letter",
+      "description": "Arsip surat dinas dan surat aktif yang diterbitkan oleh sekolah",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "nomorSurat": { "type": "string" },
+        "nomorUrut": { "type": "number" },
+        "kodeKlasifikasi": { "type": "string" },
+        "jenisSurat": { "type": "string" },
+        "perihal": { "type": "string" },
+        "sifat": { "type": "string" },
+        "lampiran": { "type": "string" },
+        "tanggalSurat": { "type": "string" },
+        "tempatDibuat": { "type": "string" },
+        "kepadaYth": { "type": "string" },
+        "penandatanganNama": { "type": "string" },
+        "penandatanganNip": { "type": "string" },
+        "penandatanganPangkat": { "type": "string" },
+        "penandatanganJabatan": { "type": "string" },
+        "includeStempel": { "type": "boolean" },
+        "includeTtd": { "type": "boolean" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "nomorSurat", "nomorUrut", "jenisSurat", "perihal", "status"]
+    },
+    "Counter": {
+      "title": "Counter",
+      "description": "Penomoran surat berurutan secara otomatis",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "lastLetterNumber": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "lastLetterNumber"]
+    },
+    "Draft": {
+      "title": "Draft",
+      "description": "Draft surat sementara saat pengisian realtime agar data tidak hilang",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "letterType": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "letterType"]
+    }
+  },
+  "firestore": {
+    "/school_profile/{profileId}": {
+      "schema": "SchoolProfile",
+      "description": "Data profil instansi sekolah dan kop surat dinas"
+    },
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Data siswa sekolah yang tersimpan secara terpusat"
+    },
+    "/teachers/{teacherId}": {
+      "schema": "Teacher",
+      "description": "Data guru dan GTK untuk surat tugas"
+    },
+    "/letters/{letterId}": {
+      "schema": "Letter",
+      "description": "Arsip surat keluar sekolah yang tersinkronisasi realtime"
+    },
+    "/counters/{counterId}": {
+      "schema": "Counter",
+      "description": "Nomor urut surat terakhir"
+    },
+    "/drafts/{draftId}": {
+      "schema": "Draft",
+      "description": "Penyimpanan otomatis saat mengisi formulir surat"
+    }
+  }
+}
